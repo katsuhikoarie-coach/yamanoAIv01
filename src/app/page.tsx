@@ -3,6 +3,7 @@ import { useState } from "react";
 import { detectStep, UserState } from "@/lib/detectStep";
 import ChatWindow from "@/components/ChatWindow";
 import InputForm from "@/components/InputForm";
+import AgeSelector from "@/components/AgeSelector";
 
 type Message = { role: "user" | "model"; text: string };
 
@@ -28,9 +29,10 @@ export default function Home() {
     }
   };
 
-  const handleSend = async () => {
-    if (!input.trim() || isLoading) return;
-    const userMsg: Message = { role: "user", text: input };
+  // テキスト送信・年代ボタン送信の共通処理
+  const sendMessage = async (text: string) => {
+    if (!text.trim() || isLoading) return;
+    const userMsg: Message = { role: "user", text };
     const next = detectStep([...messages, userMsg], userState);
     setUserState(next);
     const updated = [...messages, userMsg];
@@ -70,6 +72,12 @@ export default function Home() {
     }
   };
 
+  const handleSend = () => sendMessage(input);
+  const handleSelectAge = (age: string) => sendMessage(age);
+
+  // 年代未選択のときはボタン選択UI、選択後は通常の入力フォーム
+  const showAgeSelector = userState.age === "";
+
   return (
     <main className="flex flex-col h-screen bg-[#F9F5EF]">
       <header className="no-print py-4 px-6 border-b border-[#C9883A]/30 flex items-center justify-between">
@@ -86,12 +94,16 @@ export default function Home() {
       </header>
       <ChatWindow messages={messages} isLoading={isLoading} />
       <div className="no-print">
-        <InputForm
-          input={input}
-          onChange={setInput}
-          onSend={handleSend}
-          isLoading={isLoading}
-        />
+        {showAgeSelector ? (
+          <AgeSelector onSelect={handleSelectAge} disabled={isLoading} />
+        ) : (
+          <InputForm
+            input={input}
+            onChange={setInput}
+            onSend={handleSend}
+            isLoading={isLoading}
+          />
+        )}
       </div>
     </main>
   );
