@@ -57,7 +57,7 @@ export default function Home() {
   return (
     <main className="flex flex-col h-screen bg-[#F9F5EF]">
       <header className="py-4 px-6 border-b border-[#C9883A]/30 text-center">
-        <h1 className="text-[#2D4A3E] font-serif text-xl tracking-widest">朝霧ヤマノ AIカウンセラー</h1>
+        <h1 className="text-[#2D4A3E] font-serif text-2xl tracking-widest">朝霧ヤマノ AIカウンセラー</h1>
       </header>
       <ChatWindow messages={messages} isLoading={isLoading} />
       <InputForm

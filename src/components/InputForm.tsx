@@ -21,7 +21,7 @@ export default function InputForm({ input, onChange, onSend, isLoading }: Props)
     <div className="border-t border-[#C9883A]/20 bg-[#F9F5EF] px-4 py-3">
       <div className="flex items-end gap-2 max-w-2xl mx-auto">
         <textarea
-          className="flex-1 resize-none rounded-2xl border border-[#C9883A]/40 bg-white px-4 py-3 text-sm text-[#2D4A3E] placeholder-[#2D4A3E]/40 focus:outline-none focus:border-[#C9883A] transition-colors min-h-[48px] max-h-32"
+          className="flex-1 resize-none rounded-2xl border border-[#C9883A]/40 bg-white px-4 py-3 text-base text-[#2D4A3E] placeholder-[#2D4A3E]/40 focus:outline-none focus:border-[#C9883A] transition-colors min-h-[48px] max-h-32"
           placeholder="メッセージを入力..."
           value={input}
           onChange={(e) => onChange(e.target.value)}
