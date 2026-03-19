@@ -32,6 +32,12 @@ export async function POST(req: NextRequest) {
     }));
     const lastUserMessage = trimmed.at(-1)!.text;
 
+    // Gemini API は history の先頭が "user" である必要があるため、
+    // 先頭の "model" メッセージ（初期挨拶など）を除去する
+    while (history.length > 0 && history[0].role === "model") {
+      history.shift();
+    }
+
     // 提案フェーズのみ商品リストを追加
     let systemPrompt = SYSTEM_PROMPT;
     if (step >= 7 && userState.age && userState.budget && userState.concerns.length > 0) {
