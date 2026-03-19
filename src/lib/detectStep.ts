@@ -5,7 +5,10 @@ export type UserState = {
   concerns: string[];
 };
 
-const AGE_PATTERN = /(10|20|30|40|50|60)代/;
+// 「50代」など十年単位
+const AGE_DECADE_PATTERN = /(10|20|30|40|50|60|70|80|90)代/;
+// 「51歳」「51才」など具体的な数字
+const AGE_NUMBER_PATTERN = /(\d{1,2})\s*[歳才]/;
 const BUDGET_PATTERN = /(\d[\d,]*)\s*円|¥(\d[\d,]*)/;
 const CONCERN_KEYWORDS = ["乾燥","シワ","シミ","毛穴","リフト","敏感肌","ニキビ","くすみ","ハリ","たるみ"];
 
@@ -16,12 +19,25 @@ export function detectStep(
   const allText = messages.map((m) => m.text).join(" ");
   const next = { ...current };
 
-  // 年代抽出
+  // 年代抽出（「50代」→"50"、「51歳」「51才」→"50" に正規化）
   if (!next.age) {
-    const m = allText.match(AGE_PATTERN);
-    if (m) {
-      next.age = m[1];
-      next.step = Math.max(next.step, 2);
+    try {
+      const m = allText.match(AGE_DECADE_PATTERN);
+      if (m) {
+        next.age = m[1];
+        next.step = Math.max(next.step, 2);
+      } else {
+        const m2 = allText.match(AGE_NUMBER_PATTERN);
+        if (m2) {
+          const num = parseInt(m2[1], 10);
+          if (!isNaN(num) && num >= 10 && num <= 99) {
+            next.age = String(Math.floor(num / 10) * 10);
+            next.step = Math.max(next.step, 2);
+          }
+        }
+      }
+    } catch {
+      // 年代抽出失敗時はスキップして続行
     }
   }
 
@@ -36,11 +52,18 @@ export function detectStep(
 
   // 予算抽出
   if (!next.budget) {
-    const m = allText.match(BUDGET_PATTERN);
-    if (m) {
-      const raw = (m[1] || m[2]).replace(/,/g, "");
-      next.budget = parseInt(raw, 10);
-      next.step = Math.max(next.step, 6);
+    try {
+      const m = allText.match(BUDGET_PATTERN);
+      if (m) {
+        const raw = (m[1] || m[2]).replace(/,/g, "");
+        const parsed = parseInt(raw, 10);
+        if (!isNaN(parsed) && parsed > 0) {
+          next.budget = parsed;
+          next.step = Math.max(next.step, 6);
+        }
+      }
+    } catch {
+      // 予算抽出失敗時はスキップして続行
     }
   }
 

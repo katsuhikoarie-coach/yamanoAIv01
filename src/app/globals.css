@@ -30,3 +30,15 @@ body {
 .animate-fade-in {
   animation: fade-in 0.3s ease-out both;
 }
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+  }
+  main {
+    height: auto !important;
+  }
+}
